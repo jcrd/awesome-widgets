@@ -91,9 +91,9 @@ local function update()
 end
 
 function battery.init(ds)
-    assert(ds.upower, 'dependency error: missing upower')
+    assert(ds.upower_dbus, 'dependency error: missing upower_dbus')
 
-    batt = get_battery(ds.upower)
+    batt = get_battery(ds.upower_dbus)
 
     if batt then
         batt:on_properties_changed(function (p, changed)

@@ -42,7 +42,7 @@ end
 
 local function update_sink(s)
     if conn then
-        sink = deps.pulseaudio.get_device(conn, s or core:get_sinks()[1])
+        sink = deps.pulseaudio_dbus.get_device(conn, s or core:get_sinks()[1])
         return sink
     end
 end
@@ -54,7 +54,7 @@ end
 function pa.connect(ds)
     assert(ds.logger, 'dependency error: missing logger')
     assert(ds.logger.error, 'dependency error: missing logger.error')
-    assert(ds.pulseaudio, 'dependency error: missing pulseaudio')
+    assert(ds.pulseaudio_dbus, 'dependency error: missing pulseaudio_dbus')
 
     deps = ds
 
@@ -64,7 +64,7 @@ function pa.connect(ds)
 
     if not conn then
         _, conn = xpcall(function ()
-            return deps.pulseaudio.get_connection(deps.pulseaudio.get_address())
+            return deps.pulseaudio_dbus.get_connection(deps.pulseaudio_dbus.get_address())
         end,
         function (err)
             deps.logger.error(string.format('[pulseaudio] Failed to connect: %s', err))
@@ -76,7 +76,7 @@ function pa.connect(ds)
     end
 
     if not core then
-        core = deps.pulseaudio.get_core(conn)
+        core = deps.pulseaudio_dbus.get_core(conn)
 
         core:ListenForSignal('org.PulseAudio.Core1.Device.VolumeUpdated', {})
         core:ListenForSignal('org.PulseAudio.Core1.Device.MuteUpdated', {})

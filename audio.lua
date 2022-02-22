@@ -56,13 +56,13 @@ local function connect_backend(appear)
         return
     end
 
-    if deps.sessiond and deps.sessiond.audio_enabled then
+    if deps.sessiond_dbus and deps.sessiond_dbus.audio_enabled then
         backend_name = 'sessiond'
-        backend = deps.sessiond.audiosinks
-        deps.sessiond.on_default_audiosink_change = on_change
-    elseif deps.pulseaudio then
+        backend = deps.sessiond_dbus.audiosinks
+        deps.sessiond_dbus.on_default_audiosink_change = on_change
+    elseif deps.pulseaudio_backend then
         backend_name = 'pulseaudio'
-        backend = deps.pulseaudio.connect(deps)
+        backend = deps.pulseaudio_backend.connect(deps)
         if backend then
             backend.on_default_audiosink_change = on_change
         end
@@ -82,15 +82,15 @@ function audio.init(ds)
 
     local found
     for dep in pairs(ds) do
-        if dep == 'sessiond' or dep == 'pulseaudio' then
+        if dep == 'sessiond_dbus' or dep == 'pulseaudio_backend' then
             found = true
         end
     end
-    assert(found, 'dependency error: missing one of {sessiond, pulseaudio}')
+    assert(found, 'dependency error: missing one of {sessiond_dbus, pulseaudio_backend}')
 
     deps = ds
 
-    deps.sessiond.add_hook(function (appear)
+    deps.sessiond_dbus.add_hook(function (appear)
         gears.timer.delayed_call(function ()
             connect_backend(appear)
         end)
