@@ -90,11 +90,17 @@ function audio.init(ds)
 
     deps = ds
 
-    deps.sessiond_dbus.add_hook(function (appear)
+    local function delayed_connect(appear)
         gears.timer.delayed_call(function ()
             connect_backend(appear)
         end)
-    end)
+    end
+
+    if deps.sessiond_dbus then
+        deps.sessiond_dbus.add_hook(delayed_connect)
+    elseif deps.pulseaudio_backend then
+        delayed_connect(true)
+    end
 end
 
 function audio.widget.volumebar()
