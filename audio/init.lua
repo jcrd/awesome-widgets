@@ -43,6 +43,7 @@ local function with_backend(func_name, ...)
         deps.logger.error('[audio] Failed to get default sink')
         return
     end
+    deps.logger.debug('[audio] Calling backend function: %s', func_name)
     backend.default[func_name](...)
 end
 
@@ -73,12 +74,15 @@ local function connect_backend(appear)
         return
     end
 
+    deps.logger.debug('[audio] Connected to backend: %s', backend_name)
+
     with_backend('update')
 end
 
 function audio.init(ds)
     assert(ds.logger, 'dependency error: missing logger')
     assert(ds.logger.error, 'dependency error: missing logger.error')
+    assert(ds.logger.debug, 'dependency error: missing logger.debug')
 
     local found
     for dep in pairs(ds) do
