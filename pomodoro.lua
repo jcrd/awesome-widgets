@@ -8,6 +8,7 @@ local pomo = {}
 pomo.widget = {}
 
 local widget
+local show_icon
 
 local assets = {}
 
@@ -28,12 +29,20 @@ blink_timer:connect_signal('stop', function ()
     widget.id_blink.visible = false
 end)
 
+local function set_visibility(v)
+    widget.id_time.visible = v
+    widget.id_margin.visible = v
+    if not show_icon then
+        widget.id_const.visible = v
+    end
+end
+
 local function update_state(tbl, k, v)
     if blink_timer.started then
         blink_timer:stop()
     end
     if k == 'name' then
-        widget.visible = not (v == 'stopped')
+        set_visibility(not (v == 'stopped'))
         widget.id_const.id_icon.image = assets[v]
         if times[v] ~= nil then
             tbl.time = times[v]
@@ -88,6 +97,7 @@ local function load_assets(path)
     end
 
     return {
+        stopped = load_image('done.svg'),
         working = load_image('ticking.svg'),
         short_break = load_image('short_pause.svg'),
         long_break = load_image('long_pause.svg'),
@@ -101,9 +111,11 @@ function pomo.init(ds)
     assert(ds.config.working, 'dependency error: missing config.working')
     assert(ds.config.short_break, 'dependency error: missing config.short_break')
     assert(ds.config.long_break, 'dependency error: missing config.long_break')
+    -- `ds.config.show_icon` is an optional dependency.
 
     assets = load_assets(ds.path)
     set_length = ds.config.set_length
+    show_icon = ds.config.show_icon or false
     times = setmetatable({stopped = ds.config.working}, {__index = ds.config})
 end
 
@@ -119,10 +131,12 @@ function pomo.widget.timer()
                 layout = wibox.container.constraint,
                 strategy = 'min',
                 width = beautiful.font_size,
+                visible = show_icon,
             },
             {
                 id = 'id_time',
                 widget = wibox.widget.textbox,
+                visible = false,
             },
             {
                 -- Same width as time in `id_time` textbox.
@@ -139,9 +153,9 @@ function pomo.widget.timer()
                 id = 'id_margin',
                 widget = wibox.container.margin,
                 left = dpi(2),
+                visible = false,
             },
             layout = wibox.layout.fixed.horizontal,
-            visible = false,
         }
         init()
     end
