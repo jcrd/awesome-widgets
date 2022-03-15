@@ -9,14 +9,13 @@ local audio = {}
 
 audio.widget = {}
 audio.widget.icons = {[false] = '', [true] = ''}
+audio.widget.icon_markup = function (i)
+    return '<span rise="4000">'..i..'</span>'
+end
 
 local widget
 local backend
 local backend_name
-
-local function format_icon(i)
-    return '<span rise="4000">'..i..'</span>'
-end
 
 local function on_change(v, m)
     if audio.on_change then
@@ -28,7 +27,7 @@ local function on_change(v, m)
     end
 
     widget.id_progress.value = v
-    widget.id_icon.markup = format_icon(audio.widget.icons[m])
+    widget.id_icon.markup = audio.widget.icon_markup(audio.widget.icons[m])
 
     if not widget.visible then
         widget.visible = true

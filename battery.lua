@@ -14,6 +14,9 @@ battery.widget.icons = {
     [25] = '',
     [0] = '',
 }
+battery.widget.icon_markup = function (i)
+    return '<span rise="4000">'..i..'</span>'
+end
 
 local power = false
 local batt
@@ -30,10 +33,6 @@ end
 
 local function format_sec(s)
     return os.date('!%X', s)
-end
-
-local function format_icon(i)
-    return '<span rise="4000">'..i..'</span>'
 end
 
 local function get_icon(percent)
@@ -61,7 +60,7 @@ local function update()
         local function set()
             local t = format_sec(batt.TimeToEmpty)
 
-            widget.id_icon.markup = format_icon(get_icon(batt.Percentage))
+            widget.id_icon.markup = battery.widget.icon_markup(get_icon(batt.Percentage))
             widget.id_time.text = t
 
             on_update(t)
@@ -83,7 +82,7 @@ local function update()
         power = true
         local t = format_sec(batt.TimeToFull)
 
-        widget.id_icon.markup = format_icon(battery.widget.icons.power)
+        widget.id_icon.markup = battery.widget.icon_markup(battery.widget.icons.power)
         widget.id_time.text = t
 
         on_update(t)
