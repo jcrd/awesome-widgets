@@ -1,3 +1,4 @@
+local awful = require('awful')
 local wibox = require('wibox')
 local gears = require('gears')
 local beautiful = require('beautiful')
@@ -137,8 +138,14 @@ function pomo.init(ds)
     times = setmetatable({stopped = ds.config.working}, {__index = ds.config})
 end
 
-function pomo.widget.timer()
+function pomo.widget.timer(opts)
     if not widget then
+        opts = opts or {}
+        opts.buttons = opts.buttons or {
+            awful.button({}, 1, pomo.toggle),
+            awful.button({}, 3, pomo.stop),
+        }
+
         widget = wibox.widget {
             {
                 {
@@ -174,6 +181,7 @@ function pomo.widget.timer()
                 visible = false,
             },
             layout = wibox.layout.fixed.horizontal,
+            buttons = opts.buttons,
         }
         init()
     end
