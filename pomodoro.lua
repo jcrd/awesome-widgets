@@ -10,7 +10,11 @@ pomo.widget = {}
 local widget
 local show_icon
 
-local assets = {}
+local icon_widget = {
+    widget = wibox.widget.imagebox,
+    handler = function (w, a) w.image = a end,
+    assets = {},
+}
 
 local times = {}
 local state = {}
@@ -43,7 +47,7 @@ local function update_state(tbl, k, v)
     end
     if k == 'name' then
         set_visibility(not (v == 'stopped'))
-        widget.id_const.id_icon.image = assets[v]
+        icon_widget.handler(widget.id_const.id_icon, icon_widget.assets[v])
         if times[v] ~= nil then
             tbl.time = times[v]
         end
@@ -105,15 +109,29 @@ local function load_assets(path)
 end
 
 function pomo.init(ds)
-    assert(ds.path, 'dependency error: missing path')
     assert(ds.config, 'dependency error: missing config')
     assert(ds.config.set_length, 'dependency error: missing config.set_length')
     assert(ds.config.working, 'dependency error: missing config.working')
     assert(ds.config.short_break, 'dependency error: missing config.short_break')
     assert(ds.config.long_break, 'dependency error: missing config.long_break')
     -- `ds.config.show_icon` is an optional dependency.
+    -- `ds.icon_widget` is an optional dependency.
 
-    assets = load_assets(ds.path)
+    if ds.icon_widget then
+        assert(ds.icon_widget.widget, 'dependency error: missing icon_widget.widget')
+        assert(ds.icon_widget.handler, 'dependency error: missing icon_widget.handler')
+        assert(ds.icon_widget.assets, 'dependency error: missing icon_widget.assets')
+        local asset_keys = {'stopped', 'working', 'short_break', 'long_break'}
+        for _, v in ipairs(asset_keys) do
+            assert(ds.icon_widget.assets[v],
+                'dependency error: missing icon_widget.assets.'..v)
+        end
+        icon_widget = ds.icon_widget
+    else
+        assert(ds.path, 'dependency error: missing path')
+        icon_widget.assets = load_assets(ds.path)
+    end
+
     set_length = ds.config.set_length
     show_icon = ds.config.show_icon or false
     times = setmetatable({stopped = ds.config.working}, {__index = ds.config})
@@ -125,7 +143,7 @@ function pomo.widget.timer()
             {
                 {
                     id = 'id_icon',
-                    widget = wibox.widget.imagebox,
+                    widget = icon_widget.widget,
                 },
                 id = 'id_const',
                 layout = wibox.container.constraint,
