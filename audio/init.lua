@@ -106,25 +106,28 @@ function audio.init(ds)
     end
 end
 
-function audio.widget.volumebar()
+function audio.widget.volumebar(opts)
     if not widget then
-        local m = dpi(2)
+        opts = opts or {}
+        opts.width = dpi(opts.width or 50)
+        opts.height = dpi(opts.height or 2)
+
         widget = wibox.widget {
             {
                 id = 'id_icon',
                 widget = wibox.widget.textbox,
-                forced_width = beautiful.font_size + m,
+                forced_width = beautiful.font_size * 1.5,
             },
             {
                 id = 'id_progress',
                 widget = wibox.widget.progressbar,
                 max_value = 1,
-                forced_width = dpi(50),
+                forced_width = opts.width,
                 margins = {
-                    top = beautiful.wibar_height / 2 - m,
-                    bottom = beautiful.wibar_height / 2 - m,
-                    left = m,
-                    right = m,
+                    top = beautiful.wibar_height / 2 - opts.height,
+                    bottom = beautiful.wibar_height / 2 - opts.height,
+                    left = opts.height,
+                    right = opts.height,
                 },
                 color = beautiful.fg_normal,
                 background_color = beautiful.bg_normal_alt
