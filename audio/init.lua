@@ -9,9 +9,9 @@ local deps = {}
 local audio = {}
 
 audio.widget = {}
-audio.widget.icons = {[false] = '', [true] = ''}
-audio.widget.icon_markup = function (i)
-    return '<span rise="4000">'..i..'</span>'
+audio.widget.icons = { [false] = '', [true] = '' }
+audio.widget.icon_markup = function(i)
+    return '<span rise="4000">' .. i .. '</span>'
 end
 
 audio.volume_step = 0.05
@@ -97,7 +97,7 @@ function audio.init(ds)
     deps = ds
 
     local function delayed_connect(appear)
-        gears.timer.delayed_call(function ()
+        gears.timer.delayed_call(function()
             connect_backend(appear)
         end)
     end
@@ -116,8 +116,8 @@ function audio.widget.volumebar(opts)
         opts.height = dpi(opts.height or 2)
         opts.buttons = opts.buttons or {
             awful.button({}, 1, audio.toggle_mute),
-            awful.button({}, 4, function () audio.inc_volume() end),
-            awful.button({}, 5, function () audio.dec_volume() end),
+            awful.button({}, 4, function() audio.inc_volume() end),
+            awful.button({}, 5, function() audio.dec_volume() end),
         }
 
         widget = wibox.widget {

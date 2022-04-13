@@ -3,7 +3,7 @@ local deps = {}
 local pa = {}
 
 pa.default = {}
-pa.on_default_audiosink_change = function (...) end
+pa.on_default_audiosink_change = function(...) end
 
 local connection_failed = false
 local conn
@@ -28,12 +28,12 @@ local function connect_device(dev)
         return
     end
     if dev.signals.VolumeUpdated then
-        dev:connect_signal(function (s, v)
+        dev:connect_signal(function(s, v)
             on_change(s, v, s:is_muted())
         end, 'VolumeUpdated')
     end
     if dev.signals.MuteUpdated then
-        dev:connect_signal(function (s, m)
+        dev:connect_signal(function(s, m)
             on_change(s, get_volume(s), m)
         end, 'MuteUpdated')
     end
@@ -48,7 +48,7 @@ local function update_sink(s)
 end
 
 local function set_volume(v)
-    sink:set_volume({math.max(0, math.min(v, 1))})
+    sink:set_volume({ math.max(0, math.min(v, 1)) })
 end
 
 function pa.connect(ds)
@@ -63,12 +63,12 @@ function pa.connect(ds)
     end
 
     if not conn then
-        _, conn = xpcall(function ()
+        _, conn = xpcall(function()
             return deps.pulseaudio_dbus.get_connection(deps.pulseaudio_dbus.get_address())
         end,
-        function (err)
-            deps.logger.error(string.format('[pulseaudio] Failed to connect: %s', err))
-        end)
+            function(err)
+                deps.logger.error(string.format('[pulseaudio] Failed to connect: %s', err))
+            end)
         if not conn then
             connection_failed = true
             return nil
@@ -80,9 +80,9 @@ function pa.connect(ds)
 
         core:ListenForSignal('org.PulseAudio.Core1.Device.VolumeUpdated', {})
         core:ListenForSignal('org.PulseAudio.Core1.Device.MuteUpdated', {})
-        core:ListenForSignal('org.PulseAudio.Core1.NewSink', {core.object_path})
+        core:ListenForSignal('org.PulseAudio.Core1.NewSink', { core.object_path })
 
-        core:connect_signal(function (_, s)
+        core:connect_signal(function(_, s)
             if connect_device(update_sink(s)) then
                 pa.default.update()
             end

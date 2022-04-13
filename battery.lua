@@ -14,8 +14,8 @@ battery.widget.icons = {
     [25] = '',
     [0] = '',
 }
-battery.widget.icon_markup = function (i)
-    return '<span rise="4000">'..i..'</span>'
+battery.widget.icon_markup = function(i)
+    return '<span rise="4000">' .. i .. '</span>'
 end
 
 local power = false
@@ -23,7 +23,7 @@ local batt
 local widget
 
 local function get_battery(upower)
-    for i = 1,#upower.Manager.devices do
+    for i = 1, #upower.Manager.devices do
         local dev = upower.Manager.devices[i]
         if dev.type == upower.enums.DeviceType.Battery then
             return dev
@@ -95,7 +95,7 @@ function battery.init(ds)
     batt = get_battery(ds.upower_dbus)
 
     if batt then
-        batt:on_properties_changed(function (p, changed)
+        batt:on_properties_changed(function(p, changed)
             if changed.TimeToEmpty or changed.TimeToFull then
                 update()
             end
@@ -104,7 +104,7 @@ function battery.init(ds)
         gears.timer {
             timeout = 20,
             autostart = true,
-            callback = function () batt:Refresh() end,
+            callback = function() batt:Refresh() end,
         }
     end
 end

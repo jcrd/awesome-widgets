@@ -13,7 +13,7 @@ local show_icon
 
 local icon_widget = {
     widget = wibox.widget.imagebox,
-    handler = function (w, a) w.image = a end,
+    handler = function(w, a) w.image = a end,
     assets = {},
 }
 
@@ -23,13 +23,13 @@ local set_length
 
 local blink_timer = gears.timer {
     timeout = 0.5,
-    callback = function ()
+    callback = function()
         widget.id_blink.visible = widget.id_time.visible
         widget.id_time.visible = not widget.id_time.visible
     end,
 }
 
-blink_timer:connect_signal('stop', function ()
+blink_timer:connect_signal('stop', function()
     widget.id_time.visible = true
     widget.id_blink.visible = false
 end)
@@ -62,7 +62,7 @@ local function update_state(tbl, k, v)
 end
 
 local s = setmetatable({}, {
-    __index = function (_, k) return state[k] end,
+    __index = function(_, k) return state[k] end,
     __newindex = update_state,
 })
 
@@ -122,10 +122,10 @@ function pomo.init(ds)
         assert(ds.icon_widget.widget, 'dependency error: missing icon_widget.widget')
         assert(ds.icon_widget.handler, 'dependency error: missing icon_widget.handler')
         assert(ds.icon_widget.assets, 'dependency error: missing icon_widget.assets')
-        local asset_keys = {'stopped', 'working', 'short_break', 'long_break'}
+        local asset_keys = { 'stopped', 'working', 'short_break', 'long_break' }
         for _, v in ipairs(asset_keys) do
             assert(ds.icon_widget.assets[v],
-                'dependency error: missing icon_widget.assets.'..v)
+                'dependency error: missing icon_widget.assets.' .. v)
         end
         icon_widget = ds.icon_widget
     else
@@ -135,7 +135,7 @@ function pomo.init(ds)
 
     set_length = ds.config.set_length
     show_icon = ds.config.show_icon or false
-    times = setmetatable({stopped = ds.config.working}, {__index = ds.config})
+    times = setmetatable({ stopped = ds.config.working }, { __index = ds.config })
 end
 
 function pomo.widget.timer(opts)
